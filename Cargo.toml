@@ -1,0 +1,11 @@
+[package]
+name = "tools"
+version = "0.1.0"
+authors = ["MashPlant <mashplant@163.com>"]
+edition = "2018"
+
+[features]
+debug-panic = []
+
+[dependencies]
+ahash = { version = "*", default-features = false }
