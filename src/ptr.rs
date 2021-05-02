@@ -2,7 +2,7 @@
 /// the `PartialEq` & `PartialOrd` & `Hash` & `Debug` & `Display` implementation of `P<T>` is based on the pointer value,
 /// while those of `R<T>` is based on the `T` value.
 
-use std::{ptr::NonNull, cmp::Ordering, hash::{Hash, Hasher}, ops::{Deref, DerefMut}, fmt::{Debug, Display, Formatter, Result}};
+use core::{ptr::NonNull, cmp::Ordering, hash::*, ops::*, fmt::{Debug, Display, Formatter, Result}};
 
 #[repr(transparent)]
 pub struct P<T: ?Sized>(pub NonNull<T>);

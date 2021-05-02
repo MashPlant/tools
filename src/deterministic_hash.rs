@@ -5,7 +5,7 @@
 #[derive(Copy, Clone, Eq, PartialEq, Default)]
 pub struct AHashBuilder;
 
-impl std::hash::BuildHasher for AHashBuilder {
+impl core::hash::BuildHasher for AHashBuilder {
   type Hasher = ahash::AHasher;
 
   fn build_hasher(&self) -> Self::Hasher {
@@ -15,6 +15,8 @@ impl std::hash::BuildHasher for AHashBuilder {
 }
 
 /// The deterministic `HashMap` type.
+#[cfg(feature = "std")]
 pub type HashMap<K, V> = std::collections::HashMap<K, V, AHashBuilder>;
 /// The deterministic `HashSet` type.
+#[cfg(feature = "std")]
 pub type HashSet<K> = std::collections::HashSet<K, AHashBuilder>;

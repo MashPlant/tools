@@ -5,6 +5,8 @@ authors = ["MashPlant <mashplant@163.com>"]
 edition = "2018"
 
 [features]
+default = ["std"]
+std = []
 debug-panic = []
 
 [dependencies]

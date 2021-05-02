@@ -1,4 +1,4 @@
-use std::fmt;
+use core::fmt::*;
 
 pub const WORD_BIT: usize = 32;
 
@@ -27,17 +27,19 @@ pub unsafe fn ubs1(x: *const u32) -> UnsafeBitSet { UnsafeBitSet(x as _) }
 pub fn bslen(bits: usize) -> usize { (bits + 31) >> 5 }
 
 #[inline(always)]
-pub fn bsmake(bits: usize) -> Box<[u32]> { vec![0; bslen(bits)].into() }
+pub fn bsmake(bits: usize) -> alloc::boxed::Box<[u32]> {
+  unsafe { alloc::boxed::Box::new_zeroed_slice(bits).assume_init() }
+}
 
 #[inline(always)]
-pub fn elem2bs(iter: impl IntoIterator<Item=usize>, bits: usize) -> Box<[u32]> {
+pub fn elem2bs(iter: impl IntoIterator<Item=usize>, bits: usize) -> alloc::boxed::Box<[u32]> {
   let mut bs = bsmake(bits);
   for x in iter { BitSet(&mut bs).set(x); }
   bs
 }
 
 #[inline(always)]
-pub fn slice2bs(x: &[bool]) -> Box<[u32]> {
+pub fn slice2bs(x: &[bool]) -> alloc::boxed::Box<[u32]> {
   let mut bs = bsmake(x.len());
   for (i, &x) in x.iter().enumerate() {
     if x { UnsafeBitSet(bs.as_mut_ptr()).set(i) }
@@ -64,8 +66,8 @@ impl ImmutableBitSet<'_> {
   }
 }
 
-impl fmt::Display for ImmutableBitSet<'_> {
-  fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+impl Display for ImmutableBitSet<'_> {
+  fn fmt(&self, f: &mut Formatter) -> Result {
     let mut list = f.debug_list();
     self.ones(|x| { list.entry(&x); });
     list.finish()

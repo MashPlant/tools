@@ -1,4 +1,4 @@
-use std::fmt::*;
+use core::fmt::*;
 
 #[inline(always)]
 pub fn fn2display(f: impl Fn(&mut Formatter) -> Result) -> impl Display {
