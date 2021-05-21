@@ -1,8 +1,9 @@
 #![feature(try_trait)]
+#![feature(try_trait_v2)]
+#![feature(control_flow_enum)]
 #![feature(new_uninit)]
 #![cfg_attr(not(feature = "std"), no_std)]
 
-#![cfg(not(feature = "std"))]
 extern crate alloc;
 
 pub mod bitset;
@@ -15,7 +16,9 @@ pub use deterministic_hash::*;
 pub use impl_try::*;
 pub use ptr::*;
 
+impl_residual!(_ <T> core::ops::FromResidual for P<T>);
 impl_try!(_ <T> core::ops::Try for P<T>);
+impl_residual!(_ <T> core::ops::FromResidual for R<T>);
 impl_try!(_ <T> core::ops::Try for R<T>);
 
 /// Almost identical with `()`, but it implements `Try`.

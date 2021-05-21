@@ -18,21 +18,32 @@ pub fn try_failed() -> ! {
   panic!("try failed");
 }
 
+/// Prerequisite for `impl_try!`.
+#[macro_export] macro_rules! impl_residual {
+  (_ $($arg:tt)*) => {
+    impl $($arg)* {
+      #[inline(always)]
+      #[track_caller]
+      fn from_residual(_: core::option::Option<core::convert::Infallible>) -> Self { $crate::impl_try::try_failed() }
+    }
+  };
+}
+
 /// Implement `core::ops::Try` for an arbitrary type,
 /// so that the `?` operator can be used on a `core::option::Option` value in a function that returns this type.
 /// When the option value is `None`, the `?` operator will call `try_failed`, which will panic;
 /// when the option value is `Some`, the value the `?` operator will return the wrapped value.
 #[macro_export] macro_rules! impl_try {
-  ($ty: ty) => { impl_try!(_ core::ops::Try for $ty); };
+  ($ty: ty) => {
+    $crate::impl_residual!(_ core::ops::FromResidual for $ty);
+    $crate::impl_try!(_ core::ops::Try for $ty);
+  };
   (_ $($arg:tt)*) => { // _ is necessary to distinguish from ty
     impl $($arg)* {
-      type Ok = Self;
-      type Error = core::option::NoneError;
-      fn into_result(self) -> core::result::Result<Self::Ok, Self::Error> { Ok(self) }
-      #[inline(always)]
-      #[track_caller]
-      fn from_error(_: Self::Error) -> Self { $crate::impl_try::try_failed() }
-      fn from_ok(v: Self::Ok) -> Self { v }
+      type Output = Self;
+      type Residual = core::option::Option<core::convert::Infallible>;
+      fn from_output(v: Self::Output) -> Self { v }
+      fn branch(self) -> core::ops::ControlFlow<Self::Residual, Self::Output> { core::ops::ControlFlow::Continue(self) }
     }
   };
 }
